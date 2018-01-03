@@ -20,5 +20,5 @@ df['datetime'] = lista_tid
 df['datetime'] = pd.to_datetime(df['datetime'])
 df.index = df['datetime']
 df['movement'] = antal4
-Our_data=df.resample('2min').sum()
+Our_data=df.resample('2min').sum()  # Our_data ger data summerad varannan minut, om några värden blir none kan man ändra till ex. 5min istället
 #print(df.resample('2min').sum())
