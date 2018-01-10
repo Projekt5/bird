@@ -22,3 +22,29 @@ df.index = df['datetime']
 df['movement'] = antal4
 Our_data=df.resample('2min').sum()  # Our_data ger data summerad varannan minut, om några värden blir none kan man ändra till ex. 5min istället
 #print(df.resample('2min').sum())
+
+
+
+#### Class digint
+class digint(int):
+    """
+    This is a class for comparing integer hundreds thousands etc. seperately
+    """
+    def __init__(self, tal):
+        n=len(str(tal))
+        if n>6:
+            raise ValueError("This number is to large")
+        self.__n__=n
+                if n>=1:
+            self.en=int(str(tal)[-1])
+        if n>=2:
+            self.ti=int(str(tal)[-2])*10
+        if n>=3:
+            self.ha=int(str(tal)[-3])*100
+        if n>=4:
+            self.tn=int(str(tal)[-4])*1000
+        if n>=5:
+            self.ttn=int(str(tal)[-5])*10000
+        if n==6:
+            self.htn=int(str(tal)[-6])*100000
+        self.tal=tal
