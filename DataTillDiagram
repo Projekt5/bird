@@ -1,0 +1,13 @@
+def DataTillDiagram():
+    start_år = int(input("Start år: "))
+    start_månad = int(input("Start månad: "))
+    start_dag = int(input("Start dag: "))
+    slut_år = int(input("Slut år: "))
+    slut_månad = int(input("Slut månad: "))
+    slut_dag = int(input("Slut dag: "))
+    intervall_sort=input("Ska intervallet vara i D(dag) eller min(minuter) eller M(månader)? ")
+    intervall = int(input("Intervall (hur många mellan punkterna): "))
+    start=tm.date(start_år,start_månad,start_dag)
+    slut=tm.date(slut_år,slut_månad,slut_dag)
+    return start,slut,intervall,intervall_sort
+start,slut,intervall,intervall_sort=DataTillDiagram()
