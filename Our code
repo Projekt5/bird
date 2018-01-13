@@ -178,6 +178,64 @@ show()
 
 for background showing sunlight time
 
+
+def funccc(lista, intervallet, tidzon=00):
+    lista_tid=[k[0:26] for k in lista]
+    lista_antal=[int(k[29:-2]) for k in lista] # have these as inputs instead??
+    
+    for i in range(len(lista_antal)):
+        if lista_antal[i-1]>lista_antal[i]<lista_antal[i+1]:
+            lista_antal[i]=lista_antal[i-1]
+    
+    antal=[0]+list(diff(lista_antal))
+    movement=[0 if k<0 else k for k in antal]
+    df=pd.DataFrame()
+    df['datetime'] = lista_tid
+    df['datetime'] = pd.to_datetime(df['datetime'])
+    df.index = df['datetime']
+    df['movement'] = movement
+    df.tz_localize('UTC', level=0) #fixar timezone??
+    ad=df.resample(intervallet).sum()
+    return ad
+
+def soliga_timmar(datum):
+    city_name = 'copenhagen'
+
+    city = a[city_name]
+
+    sun = city.sun(datum, local=True)
+    print('Sunrise: %s' % str(sun['sunrise']))
+    print('Sunset:  %s' % str(sun['sunset']))
+    
+
+    sunset=(sun['sunset'])
+    sunrise=(sun['sunrise'])
+
+
+    plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
+
+    plt.show()
+
+soliga_timmar(2015, 3, 12)
+start=start.time.Date
+slut=slut.time.Date
+while True:
+    plot()
+    start+=timedelta(days=1)
+    if start==slut:
+        plot()
+        break
+        
+    if start>slut:
+        break
+
+    
+c=funccc(lista,'27min')
+x=c.index
+y=c['movement']
+
+bar(x,y)
+
 ################################################
 funccc(lista,intervall)
 
