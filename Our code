@@ -185,3 +185,13 @@ import dropdown
 
 if __name__ == '__main__':
     main()  
+
+
+year_start=None
+month_start=None
+day_start=None
+interval_type=None
+interval=None
+year_end=None
+month_end=None
+day_end=None
