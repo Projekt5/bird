@@ -11,7 +11,36 @@ from astral import *
 import pandas as pd
 
 ##############################################################
-def funccc(lista, intervallet, tidzon=00):
+#Imports
+from tkinter import Tk, Text, TOP, BOTH, X, N, LEFT, RAISED
+from tkinter.ttk import Frame, Label, Entry
+import tkinter as tk
+
+from pytz import *
+from  pylab import *
+from datetime import *
+from astral import *
+import pandas as pd
+
+##############################################################
+def funccc(): #start_tid, slut_tid, interval
+    
+    import dropdown
+    
+    if __name__ == '__main__':
+        main()  
+    dict_Month = {'January': '01' ,'February': '02','Mars': '03','April': '04', 'May': '05', 'June': '06', 'July': '07', 'August': '08', 'September': '09', 'October': '10', 'November': '11', 'December': '12'}
+    dict_Interval = {'Month': 'm','Day': 'd','Hour': 'h','Minute': 'min'}
+    start_time=datetime(int(year_start),int(dict_Month[month_start]),int(day_start))
+    end_time=datetime(int(year_end),int(dict_Month[month_end]),int(day_end))
+    end_time=end_time+timedelta(days=1) #start of the day instead
+    intervallet=interval+'B'+dict_Interval[interval_type] # because of the b, is the plot worng?
+    print(type(start_time))
+    def testfile():
+        file=open('bird_jan25jan16fix.dat','r')
+        return file
+
+    lista=list(testfile())
     lista_tid=[k[0:26] for k in lista]
     lista_antal=[int(k[29:-2]) for k in lista] # have these as inputs instead??
     
@@ -21,22 +50,50 @@ def funccc(lista, intervallet, tidzon=00):
     
     antal=[0]+list(diff(lista_antal))
     movement=[0 if k<0 else k for k in antal]
+    movement=[4 if k>10 else k for k in movement]
+    
     df=pd.DataFrame()
     df['datetime'] = lista_tid
     df['datetime'] = pd.to_datetime(df['datetime'])
     df.index = df['datetime']
     df['movement'] = movement
-    df.tz_localize('UTC', level=0) #fixar timezone??
-    ad=df.resample(intervallet).sum()
-    return movement, lista_tid, ad
-
-##################################################################
-
-def testfile():
-    file=open('bird_jan25jan16fix.dat','r')
-    return file
-
-lista=list(testfile())
+    df_utc=df.tz_localize('UTC', level=0) #fixar timezone??
+    df_timezone=df_utc.tz_convert('Europe/Copenhagen')
+    DF=df_timezone.resample(intervallet).sum()
+    
+    str_start=year_start+'-'+dict_Month[month_start]+'-'+day_start
+    str_slut=year_end+'-'+dict_Month[month_end]+'-'+day_end
+    
+    ad=DF[str_start:str_slut]
+    x=ad.index
+    y=ad['movement']
+    
+    def soliga_timmar(datum):
+        astral=Astral()
+        city_name = 'Copenhagen'
+        city = astral[city_name]
+        sun = city.sun(datum, local=True)    
+        sunset=(sun['sunset'])
+        sunrise=(sun['sunrise'])
+        plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
+    
+    start=start_time
+    slut=end_time
+    
+    intervall_typ=
+    diff_intervalltyp=
+    
+    fet=1.0/(intervall_typ*diff_intervalltyp) # blir det rätt?
+    while True:
+        soliga_timmar(start)
+        start+=timedelta(days=1)
+        if start==slut:
+            soliga_timmar(start)
+            break            
+        if start>slut:
+            break
+    bar(x,y, width=fet)
+    show()
 
 ######################################################################
 
@@ -147,10 +204,7 @@ class Example(Frame):
         frame4.pack(fill=BOTH, padx=5, expand=True)   
         
         button = tk.Button(frame4, text="Confirm your choices", command=retrieve_input, font=14, background='#05cf29')
-        button.pack(side='bottom', padx=10, pady=10)
-        
-        button2 = tk.Button(frame4, text="Bye", command=window_destroy, font=14, background='#fc1b1b')
-        button2.pack(side='bottom', padx=10, pady=10)              
+        button.pack(side='bottom', padx=10, pady=10)            
 
 def main():
   
