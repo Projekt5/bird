@@ -1,0 +1,125 @@
+from tkinter import Tk, Text, TOP, BOTH, X, N, LEFT, RAISED
+from tkinter.ttk import Frame, Label, Entry
+import tkinter as tk
+            
+class Example(Frame):
+  
+    def __init__(self):
+        super().__init__()   
+         
+        self.initUI()
+
+        
+    def initUI(self):
+      
+        self.master.title("Options for plot")
+        self.pack(fill=BOTH, expand=True) 
+        def window_destroy():
+            global root
+            root.destroy()
+
+        def retrieve_input():
+            global year_start
+            global month_start
+            global day_start
+            global interval_type
+            global interval
+            global year_end
+            global month_end
+            global day_end
+            
+            year_start=var1.get()
+            month_start=var2.get()
+            day_start=var3.get()
+            interval_type=var4.get()
+            interval=option5.get()
+            year_end=var6.get()
+            month_end=var7.get()
+            day_end=var8.get()
+            window_destroy()
+            
+        var1 = tk.StringVar(self)
+        var2 = tk.StringVar(self)
+        var3 = tk.StringVar(self)
+        var4 = tk.StringVar(self)
+        var6 = tk.StringVar(self)
+        var7 = tk.StringVar(self)
+        var8 = tk.StringVar(self)
+        # initial value
+        var1.set('Year')
+        var2.set('Month')
+        var3.set('Day')
+        var4.set('Type')
+        var6.set('Year')
+        var7.set('Month')
+        var8.set('Day')
+        
+        year = ['2015','2016']
+        month = ['January', 'February', 'Mars', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        day = ['01', '02', '03', '04','05', '06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
+        typintervall=['Day','Hour','Minute']
+        #rad 1
+        frame1 = Frame(self)
+        frame1.pack(fill=X)
+        
+        lbl1 = Label(frame1, text="Start date:", width=12)
+        lbl1.pack(side=LEFT, padx=5, pady=5)           
+        #first dropdown start year
+        option1 = tk.OptionMenu(frame1, var1, *year)
+        option1.pack(side='left', padx=15, pady=5)
+        #second dropdown start month
+        option2 = tk.OptionMenu(frame1, var2, *month)
+        option2.pack(side='left', padx=15, pady=5)
+        #third dropdown start day
+        option3 = tk.OptionMenu(frame1, var3, *day)
+        option3.pack(side='left', padx=15, pady=5)
+        #rad 2
+        frame2 = Frame(self)
+        frame2.pack(fill=X)
+        
+        lbl2 = Label(frame2, text="Interval:", width=12)
+        lbl2.pack(side=LEFT, padx=5, pady=5)
+        
+        option4 = tk.OptionMenu(frame2, var4, *typintervall)
+        option4.pack(side='left', padx=15, pady=5)
+
+        lbl5 = Label(frame2, text='Step-size:', width=10)
+        lbl5.pack(side=LEFT, padx=5, pady=5)
+
+        option5 = Entry(frame2, width=2)
+        option5.pack(side=LEFT, padx=0, pady=5)
+        
+        frame3 = Frame(self)
+        frame3.pack(fill=X)
+        
+        lbl3 = Label(frame3, text="End date:", width=12)
+        lbl3.pack(side=LEFT, anchor=N, padx=5, pady=5)
+
+        option6 = tk.OptionMenu(frame3, var6, *year)
+        option6.pack(side='left', padx=15, pady=5)
+
+        option7 = tk.OptionMenu(frame3, var7, *month)
+        option7.pack(side='left', padx=15, pady=5)
+
+        option8 = tk.OptionMenu(frame3, var8, *day)
+        option8.pack(side='left', padx=15, pady=5)
+        
+        frame4 = Frame(self)
+        frame4.pack(fill=BOTH, padx=5, expand=True)   
+        
+        button = tk.Button(frame4, text="Confirm your choices", command=retrieve_input, font=14, background='#05cf29')
+        button.pack(side='bottom', padx=10, pady=10)
+             
+
+def main():
+  
+    global root
+    root = Tk()
+    root.geometry("410x250+100+100")
+    root.config(background='#7b7a8b')
+    app = Example()
+    root.mainloop()  
+
+#
+#if __name__ == '__main__':
+#    main()  
