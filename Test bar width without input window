@@ -1,0 +1,63 @@
+def testfile():
+    file=open('bird_jan25jan16fix.dat','r')
+    return file
+
+lista=list(testfile())
+lista_tid=[k[0:26] for k in lista]
+lista_antal=[int(k[29:-2]) for k in lista] # have these as inputs instead??
+
+for i in range(len(lista_antal)):
+    if lista_antal[i-1]>lista_antal[i]<lista_antal[i+1]:
+        lista_antal[i]=lista_antal[i-1]
+
+antal=[0]+list(diff(lista_antal))
+movement=[0 if k<0 else k for k in antal]
+movement=[4 if k>10 else k for k in movement]
+    
+def soliga_timmar(datum):
+    astral=Astral()
+    city_name = 'Copenhagen'
+    city = astral[city_name]
+    sun = city.sun(datum, local=True)    
+    sunset=(sun['sunset'])
+    sunrise=(sun['sunrise'])
+    plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
+
+#inter= # test for B if it takes beginning instead
+start=datetime(2015,5,11)
+slut=datetime(2015,5,12)
+#dict_intervalplot={'Minute': .minute, 'Hour': .hour, 'Day': .day, 'Month': .month}
+#intervall_typ=dict_intervalplot['Minute']
+#diff_intervalltyp=
+
+df=pd.DataFrame()
+df['datetime'] = lista_tid
+df['datetime'] = pd.to_datetime(df['datetime'])
+df.index = df['datetime']
+df['movement'] = movement
+df_utc=df.tz_localize('UTC', level=0) #fixar timezone??
+df_timezone=df_utc.tz_convert('Europe/Copenhagen')
+DF=df_timezone.resample('d').sum()
+
+ad=DF['2015-5-11':'2015-5-13'] #start och slut
+x=ad.index
+y=ad['movement']
+
+interval_type='Minute'
+interval=30
+
+
+dict_plot={'Day': '2','Hour': '48', 'Minute': '2880'}
+loop=0
+while True:
+    soliga_timmar(start)
+    loop+=1
+    start+=timedelta(days=1)
+    if start==slut:
+        soliga_timmar(start)
+        break            
+    if start>slut:
+        break
+fet=loop/(((int(dict_plot[interval_type]))/int(interval)))   #(intervall_typ*diff_intervalltyp) # blir det rätt?
+bar(x,y,width=0.75)#,width=fet)
+show()
