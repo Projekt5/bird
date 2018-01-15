@@ -1,0 +1,80 @@
+#Imports
+from tkinter import Tk, Text, TOP, BOTH, X, N, LEFT, RAISED
+from tkinter.ttk import Frame, Label, Entry
+import tkinter as tk
+
+from pytz import *
+from  pylab import *
+from datetime import *
+from astral import *
+import pandas as pd
+
+##############################################################
+def funccc():
+    
+    import dropdown
+    
+    if __name__ == '__main__':
+        main()  
+    
+    dict_Month = {'January': '01' ,'February': '02','Mars': '03','April': '04', 'May': '05', 'June': '06', 'July': '07', 'August': '08', 'September': '09', 'October': '10', 'November': '11', 'December': '12'}
+    dict_Interval = {'Day': 'd','Hour': 'h','Minute': 'min'}
+    start_time=datetime(int(year_start),int(dict_Month[month_start]),int(day_start))
+    end_time=datetime(int(year_end),int(dict_Month[month_end]),int(day_end))
+    end_time=end_time+timedelta(days=1)
+    intervallet=interval+dict_Interval[interval_type]
+    
+    def testfile():
+        file=open('bird_jan25jan16fix.dat','r')
+        return file
+
+    lista=list(testfile())
+    lista_tid=[k[0:26] for k in lista]
+    lista_antal=[int(k[29:-2]) for k in lista] # have these as inputs instead??
+    
+    for i in range(len(lista_antal)):
+        if lista_antal[i-1]>lista_antal[i]<lista_antal[i+1]:
+            lista_antal[i]=lista_antal[i-1]
+    
+    antal=[0]+list(diff(lista_antal))
+    movement=[0 if k<0 else k for k in antal]
+    movement=[4 if k>10 else k for k in movement]
+    
+    df=pd.DataFrame()
+    df['datetime'] = lista_tid
+    df['datetime'] = pd.to_datetime(df['datetime'])
+    df.index = df['datetime']
+    df['movement'] = movement
+    df_utc=df.tz_localize('UTC', level=0)
+    df_timezone=df_utc.tz_convert('Europe/Copenhagen')
+    DF=df_timezone.resample(intervallet).sum()
+    
+    str_start=year_start+'-'+dict_Month[month_start]+'-'+day_start
+    str_slut=year_end+'-'+dict_Month[month_end]+'-'+day_end
+    
+    ad=DF[str_start:str_slut]
+    x=ad.index
+    y=ad['movement']
+    
+    def soliga_timmar(datum):
+        astral=Astral()
+        city_name = 'Copenhagen'
+        city = astral[city_name]
+        sun = city.sun(datum, local=True)    
+        sunset=(sun['sunset'])
+        sunrise=(sun['sunrise'])
+        plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
+    
+    start=start_time
+    slut=end_time
+    
+    if interval_type!='Day':
+        while True:
+            soliga_timmar(start)
+            start+=timedelta(days=1)
+            if start==slut:
+                break            
+            if start>slut:
+                break
+    bar(x,y)
+    show()
