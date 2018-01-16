@@ -1,95 +1,118 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jan 13 17:52:52 2018
-@author: marte
-"""
-from pytz import * #timezone
-from  pylab import * #plot
-from datetime import * #time
-from astral import * #sunlight
-import pandas as pd #create table
+from scipy import *
+from pylab import *
+import numpy as np
+import matplotlib.pyplot as plt
+#import datetime as tm
+from astral import Astral
+from datetime import *
+import pandas as pd
+import dateutil as tz
+import pytz
 
-def funccc():
+
+def testfile():
+    file=open('/Users/holger/Downloads/bird_jan25jan16.txt','r')
+    return file
+
+lista=list(testfile())
+lista_tid=[k[0:26] for k in lista]
+lista_antal=[int(k[29:-2]) for k in lista] # have these as inputs instead??
+
+for i in range(len(lista_antal)):
+    if lista_antal[i-1]>lista_antal[i]<lista_antal[i+1]:
+        lista_antal[i]=lista_antal[i-1]
+
+antal=[0]+list(diff(lista_antal))
+movement=[0 if k<0 else k for k in antal]
+movement=[4 if k>10 else k for k in movement]
     
-    #imports the code for the input box
-    import dropdown
-    
-    # runs the code from dropdown
-    if __name__ == '__main__':
-        main()  
-    
-    #changing the user input into input we can use
-    dict_Month = {'January': '01' ,'February': '02','Mars': '03','April': '04', 'May': '05', 'June': '06', 'July': '07', 'August': '08', 'September': '09', 'October': '10', 'November': '11', 'December': '12'}
-    dict_Interval = {'Day': 'd','Hour': 'h','Minute': 'min'}
-    start_time=datetime(int(year_start),int(dict_Month[month_start]),int(day_start))
-    end_time=datetime(int(year_end),int(dict_Month[month_end]),int(day_end))
-    end_time=end_time+timedelta(days=1)
-    intervallet=interval+dict_Interval[interval_type]
-    
-    # reads the file into python
-    def testfile():
-        file=open('bird_jan25jan16fix.dat','r')
-        return file
-    
-    #puts every line into list and slices each entry do get time and data seperate
-    lista=list(testfile())
-    lista_tid=[k[0:26] for k in lista]
-    lista_antal=[int(k[29:-2]) for k in lista]
-    
-    #fix for error where digits are missin in the data
-    for i in range(len(lista_antal)):
-        if lista_antal[i-1]>lista_antal[i]<lista_antal[i+1]:
-            lista_antal[i]=lista_antal[i-1]
-    
-    #changes data to differens(actions per time interval) instead of sum
-    antal=[0]+list(diff(lista_antal))
-    movement=[0 if k<0 else k for k in antal] # fix for error counter reset
-    movement=[4 if k>10 else k for k in movement] # fix for "biological" errors, impossibly large
-    
-    #creating a dataframe(table)
-    df=pd.DataFrame()
-    df['datetime'] = lista_tid
-    df['datetime'] = pd.to_datetime(df['datetime'])
-    df.index = df['datetime']
-    df['movement'] = movement
-    df_utc=df.tz_localize('UTC', level=0) #sets timezone as UTC
-    df_timezone=df_utc.tz_convert('Europe/Copenhagen') #changes the timezone
-    DF=df_timezone.resample(intervallet).sum() #sums data in desired interval
-    
-    #creates strings for slicing our dataframe
-    str_start=year_start+'-'+dict_Month[month_start]+'-'+day_start
-    str_slut=year_end+'-'+dict_Month[month_end]+'-'+day_end
-    #slices the datafram from start date to end date
-    ad=DF[str_start:str_slut]
-    #takes index(time) as x-values and the corresponding data as y-values
-    x=ad.index
-    y=ad['movement']
-    
-    #function for changing the background when the sun is up
-    def soliga_timmar(datum):
-        astral=Astral()
-        city_name = 'Copenhagen'
-        city = astral[city_name]
-        sun = city.sun(datum, local=True)    
-        sunset=(sun['sunset'])
-        sunrise=(sun['sunrise'])
-        plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
-    
-    #start and end as datetime objects
-    start=start_time
-    slut=end_time
-    
-    #a loop for plotting with the sun function every day of the period
-    if interval_type!='Day':
-        while True:
-            soliga_timmar(start)
-            start+=timedelta(days=1)
-            if start==slut:
-                break            
-            if start>slut:
-                break
-    
-    #creates a bar plot
-    bar(x,y)
-    show()
-funccc()
+def soliga_timmar(datum):
+    astral=Astral()
+    city_name = 'Copenhagen'
+    city = astral[city_name]
+    sun = city.sun(datum, local=True)    
+    sunset=(sun['sunset'])
+    sunrise=(sun['sunrise'])
+    plt.axvspan(sunset, sunrise, facecolor='#eef239', alpha=0.7)
+
+#inter= # test for B if it takes beginning instead
+start=datetime(2015,1,26)
+slut=datetime(2015,1,26)
+#dict_intervalplot={'Minute': .minute, 'Hour': .hour, 'Day': .day, 'Month': .month}
+#intervall_typ=dict_intervalplot['Minute']
+#diff_intervalltyp=
+
+df=pd.DataFrame()
+df['datetime'] = lista_tid
+df['datetime'] = pd.to_datetime(df['datetime'])
+df.index = df['datetime']
+df['movement'] = movement
+df_utc=df.tz_localize('UTC', level=0) #fixar timezone??
+df_timezone=df_utc.tz_convert('Europe/Copenhagen')
+DF=df_timezone.resample('7d').sum()
+
+ad=DF['2015-1-25':'2016-1-16'] #start och slut
+x=ad.index
+y=ad['movement']
+
+interval_type='Minute'
+interval=30
+
+
+dict_plot={'Day': '2','Hour': '48', 'Minute': '2880'}
+loop=0
+while True:
+    soliga_timmar(start)
+    loop+=1
+    start+=timedelta(days=1)
+    if start==slut:
+        soliga_timmar(start)
+        break            
+    if start>slut:
+        break
+
+def bar_bredd1():
+    bar_bredd=0.0321
+    return bar_bredd
+    #För: '2015-5-11':'2015-5-13'
+    #Intervall: h
+def bar_bredd2():
+    bar_bredd=0.015
+    #För: '2015-5-11':'2015-5-18'
+    #Intervall: h
+    return bar_bredd
+def bar_bredd3():
+    bar_bredd=0.50
+    #För: '2015-5-11':'2015-6-11'
+    #Intervall: d
+    return bar_bredd
+def bar_bredd4():
+    bar_bredd=4.0
+    #För:'2015-1-11':'2016-1-11'
+    #Intervall: 7d
+    return bar_bredd
+def bar_bredd5():
+    bar_bredd=0.035
+    #För: '2015-1-26':'2015-1-26'
+    #Intervall: h
+    return bar_bredd
+if slut-start=timedelta(days=3):
+    a=bar_bredd1()
+    return a
+if slut-start=timedelta(days=7):
+    a=bar_bredd2()
+    return a
+if slut-start=timedelta(months=1):
+    a=bar_bredd3()
+    return a
+if slut-start=timedelta(years=1):
+    a=bar_bredd4()
+    return a
+if slut-start=timedelta(days=1)
+    a=bar_bredd5()
+    return a
+
+plt.xticks(rotation=70)
+fet=loop/(((int(dict_plot[interval_type]))/int(interval)))   #(intervall_typ*diff_intervalltyp) # blir det rätt?
+bar(x,y,width=a)#,width=fet)
+show()
